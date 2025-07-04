@@ -8,6 +8,7 @@ docker run -d -p 9000:9000 --name my-medusa-app --rm medusa-aws
 DATABASE_URL=postgres://myuser:mypassword@172.17.0.1/medusa_medusa_aws?ssl_mode=disable
 # If not, it should just be
 DATABASE_URL=postgres://myuser:mypassword@localhost/medusa_medusa_aws
+# To force ssl use ?sslmode=require (note ssl_mode and sslmode)
 
 
 
