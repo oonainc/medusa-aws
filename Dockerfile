@@ -16,5 +16,7 @@ EXPOSE 9000
 RUN npx medusa db:migrate
 RUN npx medusa user -e akanrinna@gmail.com -p Asdf123$
 
+# TODO start our angular ssr project
+
 # Start app with your dev script
 CMD ["npm", "run", "dev"]
