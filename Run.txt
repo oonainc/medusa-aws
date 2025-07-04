@@ -1,5 +1,8 @@
 # If not previously built, run
-docker build -t my-alpine-postgres .
+docker build -t medusa-aws .
 
 # Then run
-docker run -d -p 5432:5432 --name my-pg --rm -v pgdata:/var/lib/postgresql/data my-alpine-postgres
+docker run -d -p 9000:9000 --name my-medusa-app --rm medusa-aws
+
+# If testing within a docker container, DATABASE_URL in .env should be
+DATABASE_URL=postgres://myuser:mypassword@172.17.0.1/medusa-medusa-aws?ssl_mode=disable
