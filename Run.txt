@@ -5,6 +5,47 @@ docker build -t medusa-aws .
 docker run -d -p 9000:9000 --name my-medusa-app --rm medusa-aws
 
 # If testing within a docker container, and db is in another docker container, DATABASE_URL in .env should be
-DATABASE_URL=postgres://myuser:mypassword@172.17.0.1/medusa-medusa-aws?ssl_mode=disable
+DATABASE_URL=postgres://myuser:mypassword@172.17.0.1/medusa_medusa_aws?ssl_mode=disable
 # If not, it should just be
-DATABASE_URL=postgres://myuser:mypassword@localhost/medusa-medusa-aws
+DATABASE_URL=postgres://myuser:mypassword@localhost/medusa_medusa_aws
+
+
+
+
+
+
+
+Use these code samples to retrieve aws secrets in your application, if you're using secrets manager
+// Use this code snippet in your app.
+// If you need more information about configurations or implementing the sample code, visit the AWS docs:
+// https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
+
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
+
+const secret_name = "my_db_login";
+
+const client = new SecretsManagerClient({
+  region: "eu-west-3",
+});
+
+let response;
+
+try {
+  response = await client.send(
+    new GetSecretValueCommand({
+      SecretId: secret_name,
+      VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
+    })
+  );
+} catch (error) {
+  // For a list of exceptions thrown, see
+  // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+  throw error;
+}
+
+const secret = response.SecretString;
+
+// Your code goes here

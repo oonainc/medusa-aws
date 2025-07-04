@@ -17,6 +17,7 @@ RUN npx medusa db:migrate
 RUN npx medusa user -e akanrinna@gmail.com -p Asdf123$
 
 # TODO start our angular ssr project
+# TODO run tests
 
 # Start app with your dev script
 CMD ["npm", "run", "dev"]
