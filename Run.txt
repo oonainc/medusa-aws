@@ -4,5 +4,7 @@ docker build -t medusa-aws .
 # Then run
 docker run -d -p 9000:9000 --name my-medusa-app --rm medusa-aws
 
-# If testing within a docker container, DATABASE_URL in .env should be
+# If testing within a docker container, and db is in another docker container, DATABASE_URL in .env should be
 DATABASE_URL=postgres://myuser:mypassword@172.17.0.1/medusa-medusa-aws?ssl_mode=disable
+# If not, it should just be
+DATABASE_URL=postgres://myuser:mypassword@localhost/medusa-medusa-aws
