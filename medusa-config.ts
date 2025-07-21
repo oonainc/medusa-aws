@@ -15,12 +15,12 @@ module.exports = defineConfig({
     },
     // redisUrl: process.env.REDIS_URL,
     databaseDriverOptions: { // goes straight into kenx
-      connection: {
-        ssl: {
-          rejectUnauthorized: true,
-          ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
-        }
-      },
+      // connection: {
+      //   ssl: {
+      //     rejectUnauthorized: true,
+      //     ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
+      //   }
+      // },
       replication: {
         write: { connection: process.env.DATABASE_WRITE_URL },
         read: [{ connection: process.env.DATABASE_READ_URL }],
