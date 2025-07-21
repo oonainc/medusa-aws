@@ -17,16 +17,26 @@ ENV NODE_OPTIONS=--use-openssl-ca
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package files and install dependencies
+# Copy package files and install dependencies first for better docker caching
 COPY package*.json ./
 RUN npm ci --omit=dev
-RUN npm run postinstall
 
 # Copy app source
 COPY . .
+
+# Build medusa app
+RUN npx medusa build
+
+COPY patches .medusa/server/
+WORKDIR .medusa/server
+
+RUN npm ci --omit=dev
+RUN npm run postinstall
+RUN rm -rf ../../node_modules
+# RUN npm run predeploy
 
 # Expose your development port (adjust as needed)
 EXPOSE 80
 
 # Start app with your dev script
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run start"]

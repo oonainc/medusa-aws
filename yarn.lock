@@ -1977,7 +1977,7 @@
   resolved "https://registry.npmjs.org/@medusajs/cart/-/cart-2.8.6.tgz"
   integrity sha512-vPXCCpW3H9WWVorWwcwanz9lK/QanTUXQQugoPI3pa1ZepoPGxIuvLG4bENRjR/vhjFJR2P62wzmI8pP3utcvA==
 
-"@medusajs/cli@2.8.6":
+"@medusajs/cli@^2.8.6", "@medusajs/cli@2.8.6":
   version "2.8.6"
   resolved "https://registry.npmjs.org/@medusajs/cli/-/cli-2.8.6.tgz"
   integrity sha512-fWYlZRNccBbpiH6nlD/bmTrU//XFeEXH63Ax9EjU6TB/ICZoO5g8PS8qa9N3XdyORXE5MGNT9u2hptcpbZfzGA==
