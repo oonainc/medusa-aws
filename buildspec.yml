@@ -15,19 +15,7 @@ phases:
     commands:
       - echo setting AWS zone to eu-west-3...
       - aws configure set default.region eu-west-3
-      - echo using environment variable CloudFrontDistributionId...
-      - echo $CloudFrontDistributionId
   build:
     commands:
-      - echo building docker image and push to ECR...
-      - docker build -t oonainc/luxury-store .
-  post_build:
-    commands:
-      # Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI
-      # The IAM role we attached to CodeBuild help makes this easier
-      - aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.eu-west-3.amazonaws.com
-      # Tag image so we can push the image to ECR
-      - docker tag oonainc/luxury-store:latest 236426078444.dkr.ecr.eu-west-3.amazonaws.com/oonainc/luxury-store:latest
-      # Push the image to ECR
-      - docker push 236426078444.dkr.ecr.eu-west-3.amazonaws.com/oonainc/luxury-store:latest
-
+      - echo building docker image
+      - docker build -t oonainc/jumbo-bop-nodejs .
