@@ -1,5 +1,5 @@
 diff --git a/node_modules/@medusajs/framework/dist/http/middlewares/authenticate-middleware.js b/node_modules/@medusajs/framework/dist/http/middlewares/authenticate-middleware.js
-index 4022848..6c9ae7f 100644
+index 4022848..6f51f89 100644
 --- a/node_modules/@medusajs/framework/dist/http/middlewares/authenticate-middleware.js
 +++ b/node_modules/@medusajs/framework/dist/http/middlewares/authenticate-middleware.js
 @@ -33,6 +33,15 @@ const authenticate = (actorType, authType, options = {}) => {
@@ -8,10 +8,10 @@ index 4022848..6c9ae7f 100644
          }
 +        const iat = Math.floor(Date.now() / 1000);
 +        authContext =  {
-+            actor_id: 'user_01K0P4WGYTEQ9VQF28AA7EFQRH',
++            actor_id: 'user_01K0PMSXK5J9ZBMD4YXZZ1YHN9',
 +            actor_type: 'user',
-+            auth_identity_id: 'authid_01K0P4WH1TCV357A1DY607PNXX',
-+            app_metadata: { user_id: 'user_01K0P4WGYTEQ9VQF28AA7EFQRH' },
++            auth_identity_id: 'authid_01K0PMSXRP33RK09T13NHYA9DE',
++            app_metadata: { user_id: 'user_01K0PMSXK5J9ZBMD4YXZZ1YHN9' },
 +            iat,
 +            exp: iat + 24 * 60 * 60
 +        }
