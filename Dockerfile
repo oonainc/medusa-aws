@@ -27,7 +27,7 @@ COPY . .
 # Build medusa app
 RUN npx medusa build
 
-COPY patches .medusa/server/
+COPY patches ./.medusa/server/
 WORKDIR .medusa/server
 
 RUN npm ci --omit=dev
