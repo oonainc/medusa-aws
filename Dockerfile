@@ -28,11 +28,13 @@ COPY . .
 RUN npx medusa build
 
 COPY patches ./.medusa/server/patches/
+
 WORKDIR .medusa/server
 
-RUN npm ci --omit=dev
-RUN npm run postinstall
-RUN rm -rf ../../node_modules
+RUN npm ci --omit=dev && \
+    npm run postinstall && \
+    rm -rf ../../node_modules
+
 # RUN npm run predeploy
 
 # Expose your development port (adjust as needed)
