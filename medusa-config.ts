@@ -1,7 +1,15 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 import fs from 'fs'
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || 'development', process.cwd());
+const knexSslConnection = process.env.NODE_ENV == 'production' ? {
+  connection: {
+    ssl: {
+      rejectUnauthorized: true,
+      ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
+    }
+  }
+} : {};
 
 module.exports = defineConfig({
   projectConfig: {
@@ -15,12 +23,7 @@ module.exports = defineConfig({
     },
     redisUrl: process.env.REDIS_URL,
     databaseDriverOptions: { // goes straight into kenx
-      connection: {
-        ssl: {
-          rejectUnauthorized: true,
-          ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
-        }
-      },
+      ...knexSslConnection,
       replication: {
         write: { connection: process.env.DATABASE_WRITE_URL },
         read: [{ connection: process.env.DATABASE_READ_URL }],
@@ -50,6 +53,25 @@ module.exports = defineConfig({
         url: process.env.REDIS_URL,
       },
     },
+  }, {
+    resolve: "@medusajs/medusa/file",
+    options: {
+      providers: [
+        {
+          resolve: "@medusajs/medusa/file-s3",
+          id: "s3",
+          options: {
+            file_url: 'https://cdn.sabrefoxx.com/uploads',
+            region: 'eu-west-3',
+            bucket: 'oonainc-luxury-store',
+            endpoint: 'https://s3.eu-west-3.amazonaws.com/uploads',
+            // @TODO we would stop using iam user for this and prefer iam roles instead
+            access_key_id: process.env.S3_USER_ACCESS_KEY,
+            secret_access_key: process.env.S3_USER_SECRET_ACCESS_KEY
+          },
+        },
+      ],
+    }
   }],
   admin: {
     backendUrl: process.env.MEDUSA_BACKEND_URL,

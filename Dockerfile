@@ -33,7 +33,6 @@ WORKDIR .medusa/server
 
 RUN npm ci --omit=dev && \
     npm run postinstall && \
-    npm cache clean --force && \
     rm -rf ../../node_modules
 
 # RUN npm run predeploy
