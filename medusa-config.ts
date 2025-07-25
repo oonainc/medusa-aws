@@ -15,7 +15,7 @@ module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_WRITE_URL,
     http: {
-      storeCors: process.env.STORE_CORS || "http://localhost:4200,https://cdn.sabrefoxx.com",
+      storeCors: "https://cdn.sabrefoxx.com",
       adminCors: process.env.ADMIN_CORS || "http://localhost:5173,https://store-api.sabrefoxx.com",
       authCors: process.env.AUTH_CORS || "http://localhost:5173,http://localhost:4200,https://store-api.sabrefoxx.com,https://cdn.sabrefoxx.com",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
