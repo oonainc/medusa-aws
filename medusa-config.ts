@@ -10,6 +10,7 @@ const knexSslConnection = process.env.NODE_ENV == 'production' ? {
     }
   }
 } : {};
+console.log('s3 public access key: ', process.env.S3_USER_ACCESS_KEY);
 
 module.exports = defineConfig({
   projectConfig: {
