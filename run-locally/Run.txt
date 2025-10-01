@@ -1,7 +1,13 @@
-# If not previously built, run
+# Dependencies to run locally
+# You would need Valkey:
+docker run --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --volume=/data --network=bridge --workdir=/data -p 6379:6379 --restart=no --runtime=runc -d valkey/valkey:8.1.3-alpine
+# You would need Postgres:
+Build and run the Dockerfile in alpine-postgres
+
+# To build this app for docker:
 docker build -t medusa-aws .
 
-# Then run
+# To run this app with docker:
 docker run -d -p 9000:9000 --name my-medusa-app --rm medusa-aws
 
 # If testing within a docker container, and db is in another docker container, DATABASE_URL in .env should be

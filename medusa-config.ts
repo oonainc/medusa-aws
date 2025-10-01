@@ -10,13 +10,12 @@ const knexSslConnection = process.env.NODE_ENV == 'production' ? {
     }
   }
 } : {};
-console.log('s3 public access key: ', process.env.S3_USER_ACCESS_KEY);
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_WRITE_URL,
     http: {
-      storeCors: "https://cdn.sabrefoxx.com",
+      storeCors: process.env.STORE_CORS || "https://cdn.sabrefoxx.com",
       adminCors: process.env.ADMIN_CORS || "http://localhost:5173,https://store-api.sabrefoxx.com",
       authCors: process.env.AUTH_CORS || "http://localhost:5173,http://localhost:4200,https://store-api.sabrefoxx.com,https://cdn.sabrefoxx.com",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
@@ -75,6 +74,6 @@ module.exports = defineConfig({
     }
   }],
   admin: {
-    backendUrl: process.env.MEDUSA_BACKEND_URL,
+    backendUrl: process.env.MEDUSA_BACKEND_URL
   }
 })
