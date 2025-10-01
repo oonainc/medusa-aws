@@ -39,7 +39,8 @@
     "@medusajs/cli": "^2.8.6",
     "@medusajs/test-utils": "2.8.6",
     "@mikro-orm/cli": "6.4.3",
-    "@swc/core": "1.5.7",
+    "@swc/cli": "^0.7.8",
+    "@swc/core": "^1.5.7",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
     "@types/node": "^20.0.0",
@@ -50,7 +51,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2",
+    "typescript": "^5.9.3",
     "vite": "^5.2.11",
     "yalc": "^1.0.0-pre.53"
   },
