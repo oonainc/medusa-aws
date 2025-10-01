@@ -1,6 +1,6 @@
 # Dependencies to run locally
 # You would need Valkey:
-docker run --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --volume=/data --network=bridge --workdir=/data -p 6379:6379 --restart=no --runtime=runc -d valkey/valkey:8.1.3-alpine
+docker run --name valkey-alpine -p 6379:6379 --restart=no -d valkey/valkey:8.1.3-alpine
 # You would need Postgres:
 Build and run the Dockerfile in alpine-postgres
 

@@ -6,15 +6,17 @@ RUN apk add --no-cache \
     postgresql-contrib \
     bash
 
+USER root
+
+RUN mkdir -p /var/lib/postgresql/data /run/postgresql \
+		&& chown -R postgres:postgres /var/lib/postgresql /run/postgresql \
+		&& chmod 700 /var/lib/postgresql/data
+
 # by installing postgres, a linux user called postgres is also created
 USER postgres
 
 # our data directory
 ENV PGDATA=/var/lib/postgresql/data
-
-RUN mkdir -p /var/lib/postgresql/data /run/postgresql \
-		&& chown -R postgres:postgres /var/lib/postgresql /run/postgresql \
-		&& chmod 700 /var/lib/postgresql/data
 
 # initialize the data directory
 RUN initdb -D "$PGDATA" --encoding=UTF8 --locale=en_US.UTF-8
