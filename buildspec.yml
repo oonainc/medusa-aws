@@ -27,7 +27,7 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - TIMESTAMP=$(date +%Y%m%d%H%M%S)
       - IMAGE_TAG="$COMMIT_HASH-$TIMESTAMP"
-      - echo unique image tag: $IMAGE_TAG
+      - echo unique image tag is $IMAGE_TAG
 
   build:
     commands:
@@ -43,7 +43,7 @@ phases:
       # tag image so we can push the image to ECR
       - docker tag oonainc/ecomm:$IMAGE_TAG 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG
       # push the image to ECR
-      - docker push 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG
+      - docker push "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG"
       # write image detail to be used by CodeDeploy
       - printf '[{"imageUri":"%s"}]' "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imageDetail.json
 
