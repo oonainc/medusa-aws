@@ -20,16 +20,31 @@ phases:
       - aws configure set default.region us-east-1
       - echo using environment variable DATABASE_URL
       - echo $DATABASE_URL
+      
+      # generate a unique image tag instead of using string 'latest' as tag
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - TIMESTAMP=$(date +%Y%m%d%H%M%S)
+      - IMAGE_TAG="$COMMIT_HASH-$TIMESTAMP"
+      - echo unique image tag: $IMAGE_TAG
   build:
     commands:
       - echo building docker image and push to ECR...
-      - docker build -t oonainc/ecomm .
+      - docker build -t oonainc/ecomm:$IMAGE_TAG .
   post_build:
     commands:
       # retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI
       # the IAM role we attached to CodeBuild help makes this easier
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
+
       # tag image so we can push the image to ECR
-      - docker tag oonainc/ecomm:latest 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:latest
+      - docker tag oonainc/ecomm:$IMAGE_TAG 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG
       # push the image to ECR
-      - docker push 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:latest
+      - docker push 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG
+      # write image detail to be used by CodeDeploy
+      - printf '[{"imageUri":"%s"}]' "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imageDetail.json
+artifacts:
+  files:
+    - imageDetail.json
+
+
+
