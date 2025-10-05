@@ -32,7 +32,7 @@ COPY patches ./.medusa/server/patches/
 WORKDIR .medusa/server
 
 RUN npm ci --omit=dev && \
-    npm run postinstall && \
+#   npm run postinstall && \
     rm -rf ../../node_modules
 
 # RUN npm run predeploy

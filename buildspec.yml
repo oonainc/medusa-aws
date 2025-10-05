@@ -1,35 +1,35 @@
 version: 0.2
-# This buildspec is used by aws CodeBuild and publishes this app to ECR
-# We already set privileged: true in our linux environment configuration in CDK
-# So this makes Docker available for use here
+# this buildspec is used by aws CodeBuild and publishes this app to ECR
+# we already set privileged: true in our linux environment configuration in CDK
+# so this makes Docker available for use here
 
 env:
   secrets-manager:
-    DATABASE_URL: "arn:aws:secretsmanager:eu-west-3:236426078444:secret:jumbo_bop_database_secrets-fEYiGF:DATABASE_READ_URL::"
+    DATABASE_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_READ_URL::"
 phases:
   install:
     runtime-versions:
-      python: 3.x # To be able to use AWS CLI
+      python: 3.x # to be able to use AWS CLI
     commands:
       - echo installing AWS CLI...
       - pip3 install awscli --upgrade
       - aws --version
   pre_build:
     commands:
-      - echo setting AWS zone to eu-west-3...
-      - aws configure set default.region eu-west-3
+      - echo setting AWS zone to us-east-1...
+      - aws configure set default.region us-east-1
       - echo using environment variable DATABASE_URL
       - echo $DATABASE_URL
   build:
     commands:
       - echo building docker image and push to ECR...
-      - docker build -t oonainc/jumbo-bop-nodejs .
+      - docker build -t oonainc/ecomm .
   post_build:
     commands:
-      # Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI
-      # The IAM role we attached to CodeBuild help makes this easier
-      - aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.eu-west-3.amazonaws.com
-      # Tag image so we can push the image to ECR
-      - docker tag oonainc/jumbo-bop-nodejs:latest 236426078444.dkr.ecr.eu-west-3.amazonaws.com/oonainc/jumbo-bop-nodejs:latest
-      # Push the image to ECR
-      - docker push 236426078444.dkr.ecr.eu-west-3.amazonaws.com/oonainc/jumbo-bop-nodejs:latest
+      # retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI
+      # the IAM role we attached to CodeBuild help makes this easier
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
+      # tag image so we can push the image to ECR
+      - docker tag oonainc/ecomm:latest 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:latest
+      # push the image to ECR
+      - docker push 236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:latest
