@@ -1,0 +1,159 @@
+{
+	"compatibilities": [
+			"EC2",
+			"FARGATE"
+	],
+	"containerDefinitions": [
+			{
+					"cpu": 256,
+					"dockerLabels": {
+							"ecomm": ""
+					},
+					"environment": [
+							{
+									"name": "MEDUSA_BACKEND_URL",
+									"value": "https://oona-admin.sabrefoxx.com"
+							},
+							{
+									"name": "AUTH_CORS",
+									"value": "https://oona-admin.sabrefoxx.com,https://oona.sabrefoxx.com"
+							},
+							{
+									"name": "NODE_ENV",
+									"value": "production"
+							},
+							{
+									"name": "STORE_CORS",
+									"value": "https://oona.sabrefoxx.com"
+							},
+							{
+									"name": "PORT",
+									"value": "80"
+							},
+							{
+									"name": "ADMIN_CORS",
+									"value": "https://oona-admin.sabrefoxx.com"
+							}
+					],
+					"environmentFiles": [],
+					"essential": true,
+					"image": "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:70efc9f-20251005221238",
+					"logConfiguration": {
+							"logDriver": "awslogs",
+							"options": {
+									"awslogs-group": "/ecs/ecomm-task-definition",
+									"awslogs-create-group": "true",
+									"awslogs-region": "us-east-1",
+									"awslogs-stream-prefix": "ecs"
+							},
+							"secretOptions": []
+					},
+					"memory": 512,
+					"memoryReservation": 102,
+					"mountPoints": [],
+					"name": "ecomm-nodejs-container",
+					"portMappings": [
+							{
+									"appProtocol": "http",
+									"containerPort": 80,
+									"hostPort": 80,
+									"name": "ecomm-nodejs-container-port80-tcp",
+									"protocol": "tcp"
+							}
+					],
+					"secrets": [
+							{
+									"name": "DATABASE_READ_URL",
+									"valueFrom": "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_READ_URL::"
+							},
+							{
+									"name": "DATABASE_WRITE_URL",
+									"valueFrom": "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_WRITE_URL::"
+							},
+							{
+									"name": "REDIS_URL",
+									"valueFrom": "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:REDIS_URL::"
+							},
+							{
+									"name": "S3_USER_ACCESS_KEY",
+									"valueFrom": "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:S3_USER_ACCESS_KEY::"
+							},
+							{
+									"name": "S3_USER_SECRET_ACCESS_KEY",
+									"valueFrom": "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:S3_USER_SECRET_ACCESS_KEY::"
+							}
+					],
+					"systemControls": [],
+					"ulimits": [],
+					"volumesFrom": []
+			}
+	],
+	"cpu": "256",
+	"enableFaultInjection": false,
+	"ephemeralStorage": {
+			"sizeInGiB": 21
+	},
+	"executionRoleArn": "arn:aws:iam::236426078444:role/ecomm-ecs-task-role",
+	"family": "ecomm-task-definition",
+	"memory": "512",
+	"networkMode": "awsvpc",
+	"placementConstraints": [],
+	"registeredAt": "2025-10-06T16:03:39.728Z",
+	"registeredBy": "arn:aws:iam::236426078444:root",
+	"requiresAttributes": [
+			{
+					"name": "ecs.capability.execution-role-awslogs"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.ecr-auth"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.task-iam-role"
+			},
+			{
+					"name": "ecs.capability.execution-role-ecr-pull"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+			},
+			{
+					"name": "ecs.capability.task-eni"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+			},
+			{
+					"name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+			},
+			{
+					"name": "ecs.capability.secrets.asm.environment-variables"
+			},
+			{
+					"name": "ecs.capability.extensible-ephemeral-storage"
+			}
+	],
+	"requiresCompatibilities": [
+			"FARGATE"
+	],
+	"revision": 1,
+	"runtimePlatform": {
+			"cpuArchitecture": "ARM64",
+			"operatingSystemFamily": "LINUX"
+	},
+	"status": "ACTIVE",
+	"taskDefinitionArn": "arn:aws:ecs:us-east-1:236426078444:task-definition/ecomm-task-definition:1",
+	"taskRoleArn": "arn:aws:iam::236426078444:role/ecomm-ecs-task-role",
+	"volumes": [],
+	"tags": [
+			{
+					"key": "ecomm",
+					"value": ""
+			}
+	]
+}

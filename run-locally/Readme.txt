@@ -2,7 +2,7 @@
 # You would need Valkey:
 docker run --name valkey-alpine -p 6379:6379 --restart=no -d valkey/valkey:8.1.3-alpine
 # You would need Postgres:
-Build and run the Dockerfile in alpine-postgres
+Build and run the Dockerfile in ./alpine-postgres
 
 # To build this app for docker:
 docker build -t medusa-aws .

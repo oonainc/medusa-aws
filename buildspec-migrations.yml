@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    DATABASE_READ_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_READ_URL::"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x # to be able to use AWS CLI
+    commands:
+      - echo installing AWS CLI...
+      - pip3 install awscli --upgrade
+      - aws --version
+
+  pre_build:
+    commands:
+      - echo setting AWS zone to us-east-1...
+      - aws configure set default.region us-east-1
+      - echo using environment variable DATABASE_READ_URL
+      - echo $DATABASE_READ_URL
+
+      # imageDetail.json is the output artifact from the previous CodeBuild stage that built our ECR image
+      - IMAGE_URI=$(jq -r '.imageUri' imageDetail.json)
+      - echo extracted image URI $IMAGE_URI from imageDetail.json
+      - echo logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
+
+  build:
+    commands:
+      - echo using docker image to run migration in $CURRENT_ENVIRONMENT environment
+      - echo pulling docker image from ECR...
+      - docker pull $IMAGE_URI
+      - echo running db migration...
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npx medusa db:migrate
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npx medusa user -e "admin@email.com" -p "password"
+      - echo seeding database
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npm run seed
+
+  post_build:
+    commands:
+      - echo migration and seeding completed successfully...
+

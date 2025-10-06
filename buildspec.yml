@@ -4,9 +4,6 @@ version: 0.2
 # so this makes Docker available for use here
 
 env:
-  secrets-manager:
-    DATABASE_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_READ_URL::"
-
 phases:
   install:
     runtime-versions:
@@ -20,8 +17,6 @@ phases:
     commands:
       - echo setting AWS zone to us-east-1...
       - aws configure set default.region us-east-1
-      - echo using environment variable DATABASE_URL
-      - echo $DATABASE_URL
 
       # generate a unique image tag instead of using string 'latest' as tag
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -45,8 +40,9 @@ phases:
       # push the image to ECR
       - docker push "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG"
       # write image detail to be used by CodeDeploy
-      - printf '[{"imageUri":"%s"}]' "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imageDetail.json
+      - printf '{"imageUri":"%s"}' "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imageDetail.json
 
 artifacts:
   files:
     - imageDetail.json
+    - taskdef.json

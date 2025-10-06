@@ -27,6 +27,7 @@ RUN echo "listen_addresses = '*'" >> "$PGDATA"/postgresql.conf \
 ENV POSTGRES_USER=myuser
 ENV POSTGRES_PSWD=mypassword
 ENV POSTGRES_DB=mydb
+ENV POSTGRES_STAGING_DB=mystagingdb
 
 # create our first user, give it CREATEDB and CREATEROLE priviledges
 RUN echo "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PSWD';" \
@@ -34,8 +35,12 @@ RUN echo "CREATE USER \"$POSTGRES_USER\" WITH PASSWORD '$POSTGRES_PSWD';" \
 RUN echo "ALTER ROLE \"$POSTGRES_USER\" WITH CREATEDB CREATEROLE LOGIN;" \
   | postgres --single -D "$PGDATA" -E postgres
 
-# and our first db
+# create our main db
 RUN echo "CREATE DATABASE \"$POSTGRES_DB\" OWNER \"$POSTGRES_USER\";" \
+    | postgres --single -D "$PGDATA" -E postgres
+    
+# create our staging db
+RUN echo "CREATE DATABASE \"$POSTGRES_STAGING_DB\" OWNER \"$POSTGRES_USER\";" \
     | postgres --single -D "$PGDATA" -E postgres
 
 # for docker port mapping

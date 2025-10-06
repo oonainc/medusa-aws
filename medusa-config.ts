@@ -13,7 +13,7 @@ const knexSslConnection = process.env.NODE_ENV == 'production' ? {
 
 module.exports = defineConfig({
   projectConfig: {
-    databaseUrl: process.env.DATABASE_WRITE_URL,
+    databaseUrl: process.env.DATABASE_WRITE_URL || '',
     http: {
       storeCors: process.env.STORE_CORS || "https://cdn.sabrefoxx.com",
       adminCors: process.env.ADMIN_CORS || "http://localhost:5173,https://store-api.sabrefoxx.com",
@@ -39,18 +39,18 @@ module.exports = defineConfig({
   modules: [{
     resolve: "@medusajs/medusa/cache-redis",
     options: {
-      redisUrl: process.env.REDIS_URL,
+      redisUrl: process.env.REDIS_URL || '',
     },
   }, {
     resolve: "@medusajs/medusa/event-bus-redis",
     options: {
-      redisUrl: process.env.REDIS_URL,
+      redisUrl: process.env.REDIS_URL || '',
     },
   }, {
     resolve: "@medusajs/medusa/workflow-engine-redis",
     options: {
       redis: {
-        url: process.env.REDIS_URL,
+        url: process.env.REDIS_URL || '',
       },
     },
   }, {
@@ -66,14 +66,14 @@ module.exports = defineConfig({
             bucket: 'oonainc-luxury-store',
             endpoint: 'https://s3.eu-west-3.amazonaws.com/uploads',
             // @TODO we would stop using iam user for this and prefer iam roles instead
-            access_key_id: process.env.S3_USER_ACCESS_KEY,
-            secret_access_key: process.env.S3_USER_SECRET_ACCESS_KEY
+            access_key_id: process.env.S3_USER_ACCESS_KEY || '',
+            secret_access_key: process.env.S3_USER_SECRET_ACCESS_KEY || ''
           },
         },
       ],
     }
   }],
   admin: {
-    backendUrl: process.env.MEDUSA_BACKEND_URL
+    backendUrl: process.env.MEDUSA_BACKEND_URL || ''
   }
 })
