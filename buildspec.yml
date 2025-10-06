@@ -3,7 +3,6 @@ version: 0.2
 # we already set privileged: true in our linux environment configuration in CDK
 # so this makes Docker available for use here
 
-env:
 phases:
   install:
     runtime-versions:
