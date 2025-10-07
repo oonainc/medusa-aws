@@ -39,7 +39,7 @@ RUN echo "ALTER ROLE \"$POSTGRES_USER\" WITH CREATEDB CREATEROLE LOGIN;" \
 RUN echo "CREATE DATABASE \"$POSTGRES_DB\" OWNER \"$POSTGRES_USER\";" \
     | postgres --single -D "$PGDATA" -E postgres
     
-# create our staging db
+# create our staging db #@TODO this currently doesn't work
 RUN echo "CREATE DATABASE \"$POSTGRES_STAGING_DB\" OWNER \"$POSTGRES_USER\";" \
     | postgres --single -D "$PGDATA" -E postgres
 

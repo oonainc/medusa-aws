@@ -2,14 +2,15 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 import fs from 'fs'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd());
-const knexSslConnection = process.env.NODE_ENV == 'production' ?  {
-  connection: {
-    ssl: {
-      rejectUnauthorized: true,
-      ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
-    }
-  }
-} : {};
+const knexSslConnection = {};
+// const knexSslConnection = process.env.NODE_ENV == 'production' ?  {
+//   connection: {
+//     ssl: {
+//       rejectUnauthorized: true,
+//       ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
+//     }
+//   }
+// } : {};
 
 module.exports = defineConfig({
   projectConfig: {
