@@ -1,20 +1,26 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    DATABASE_READ_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_READ_URL::"
+    DATABASE_WRITE_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_WRITE_URL::"
+    REDIS_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:REDIS_URL::"
+
 phases:
   install:
     runtime-versions:
       nodejs: 22 # for frontend tests
       python: 3.x # to be able to use AWS CLI
     commands:
-      - updating system and installing dependencies...
-      - sudo dnf update -y
+      # - updating system and installing dependencies...
+      # - sudo dnf update -y
 
-      - setting up for frontend tests...
-      - echo node and npm versions...
+      - installing dependencies for frontend tests...
       - npm install -g @angular/cli
-      - sudo dnf install -y chromium
       - npm ci
       - npm i @rollup/rollup-linux-arm64-gnu --save-optional
+      - sudo yum install -y firefox
+      - npm i -D karma-firefox-launcher
 
       - echo installing AWS CLI...
       - pip3 install awscli --upgrade
@@ -45,11 +51,11 @@ phases:
       - docker pull $IMAGE_URI
 
       - echo running backend tests...
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npm run test:unit
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npm run test:integration:modules
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npm run test:unit
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npm run test:integration:modules
 
       - echo running frontend tests...
-      - npx ng test --browsers=ChromeHeadless --no-watch
+      - npx ng test --browsers=FirefoxHeadless --no-watch
 
   post_build:
     commands:

@@ -3,6 +3,8 @@ version: 0.2
 env:
   secrets-manager:
     DATABASE_READ_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_READ_URL::"
+    DATABASE_WRITE_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_WRITE_URL::"
+    REDIS_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:REDIS_URL::"
 
 phases:
   install:
@@ -32,10 +34,10 @@ phases:
       - echo pulling docker image from ECR...
       - docker pull $IMAGE_URI
       - echo running db migration...
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npx medusa db:migrate
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npx medusa user -e "admin@email.com" -p "password"
-      - echo seeding database
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL $IMAGE_URI npm run seed
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npx medusa db:migrate
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npx medusa user -e "admin@email.com" -p "password"
+      - echo seeding database...
+      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npm run seed
 
   post_build:
     commands:

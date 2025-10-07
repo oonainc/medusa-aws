@@ -4,7 +4,7 @@ FROM node:22-alpine
 RUN apk update && \
     apk add --no-cache openssl ca-certificates curl
 
-# Download and install the Amazon RDS combined CA bundle into the trusted store
+# Download and install the Amazon RDS combined CA bundle (certificate) into the trusted store
 # We need this to seamlessly connect to RDS via SSL
 RUN mkdir -p /usr/local/share/ca-certificates && \
     curl -fsSL https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
@@ -17,7 +17,7 @@ ENV NODE_OPTIONS=--use-openssl-ca
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package files and install dependencies first for better docker caching
+# Copy package files and install dependencies first for better docker npm caching
 COPY package*.json ./
 RUN npm ci --omit=dev --legacy-peer-deps
 
@@ -34,8 +34,6 @@ WORKDIR .medusa/server
 RUN npm ci --omit=dev --legacy-peer-deps && \
 #   npm run postinstall && \
     rm -rf ../../node_modules
-
-# RUN npm run predeploy
 
 # Expose your development port (adjust as needed)
 EXPOSE 80
