@@ -40,8 +40,12 @@ phases:
       - docker push "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG"
       # write image detail to be used by CodeDeploy
       - printf '{"imageUri":"%s"}' "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imageDetail.json
+      # CONTAINER_NAME must match container details container name used in ecs task definition
+      - CONTAINER_NAME="ecomm-nodejs-container"
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "236426078444.dkr.ecr.us-east-1.amazonaws.com/oonainc/ecomm:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
   files:
     - imageDetail.json
+    - imagedefinitions.json
     - taskdef.json

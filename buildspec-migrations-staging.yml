@@ -29,6 +29,7 @@ phases:
       # imageDetail.json is the output artifact from the previous CodeBuild stage that built our ECR image
       - IMAGE_URI=$(jq -r '.imageUri' imageDetail.json)
       - echo extracted image URI $IMAGE_URI from imageDetail.json
+      
       - echo logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
 
@@ -38,34 +39,37 @@ phases:
       - echo pulling docker image from ECR...
       - docker pull $IMAGE_URI
       - echo running db migration...
-      - docker run --rm \
+      - |
+        docker run --rm \
           -e DATABASE_READ_URL=$DATABASE_READ_URL \
           -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
           -e REDIS_URL=$REDIS_URL \
           -e IS_STAGING_ENV=true \
           -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
           -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
-          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
-          npx medusa db:migrate
-      - docker run --rm \
+          -e NODE_ENV=$NODE_ENV \
+          $IMAGE_URI npx medusa db:migrate
+      - |
+        docker run --rm \
           -e DATABASE_READ_URL=$DATABASE_READ_URL \
           -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
           -e REDIS_URL=$REDIS_URL \
           -e IS_STAGING_ENV=true \
           -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
           -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
-          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
-          npx medusa user -e "admin@email.com" -p "password" || true
+          -e NODE_ENV=$NODE_ENV \
+          $IMAGE_URI npx medusa user -e "admin@email.com" -p "password" || true
       - echo seeding database...
-      - docker run --rm \
+      - |
+        docker run --rm \
           -e DATABASE_READ_URL=$DATABASE_READ_URL \
           -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
           -e REDIS_URL=$REDIS_URL \
           -e IS_STAGING_ENV=true \
           -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
           -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
-          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
-          npm run seed
+          -e NODE_ENV=$NODE_ENV \
+          $IMAGE_URI npx medusa exec ./src/scripts/seed.js
 
   post_build:
     commands:
