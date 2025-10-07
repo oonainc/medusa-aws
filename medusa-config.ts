@@ -2,23 +2,22 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 import fs from 'fs'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd());
-const knexSslConnection = {};
-// const knexSslConnection = process.env.NODE_ENV == 'production' ?  {
-//   connection: {
-//     ssl: {
-//       rejectUnauthorized: true,
-//       ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
-//     }
-//   }
-// } : {};
+const knexSslConnection = process.env.NODE_ENV == 'production' && process.env?.IS_STAGING_ENV == 'false' ? {
+  connection: {
+    ssl: {
+      rejectUnauthorized: true,
+      ca: fs.readFileSync('/usr/local/share/ca-certificates/rds-global-bundle.crt')
+    }
+  }
+} : {};
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_WRITE_URL || '',
     http: {
-      storeCors: process.env.STORE_CORS || "https://oona.sabrefoxx.com",
-      adminCors: process.env.ADMIN_CORS || "http://localhost:5173,https://oona-admin.sabrefoxx.com",
-      authCors: process.env.AUTH_CORS || "http://localhost:5173,http://localhost:4200,https://oona-admin.sabrefoxx.com,https://cdn.sabrefoxx.com",
+      storeCors: process.env.STORE_CORS || "http://localhost:4200",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
+      authCors: process.env.AUTH_CORS || "http://localhost:9000,http://localhost:4200",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },

@@ -34,16 +34,40 @@ phases:
 
   build:
     commands:
-      - echo using docker image to run migration in $CURRENT_ENVIRONMENT environment
+      - echo using docker image to run migration in staging environment...
       - echo pulling docker image from ECR...
       - docker pull $IMAGE_URI
       - echo running db migration...
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY -e NODE_ENV=$NODE_ENV $IMAGE_URI npx medusa db:migrate
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY -e NODE_ENV=$NODE_ENV $IMAGE_URI npx medusa user -e "admin@email.com" -p "password"
+      - docker run --rm \
+          -e DATABASE_READ_URL=$DATABASE_READ_URL \
+          -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
+          -e REDIS_URL=$REDIS_URL \
+          -e IS_STAGING_ENV=true \
+          -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
+          -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
+          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
+          npx medusa db:migrate
+      - docker run --rm \
+          -e DATABASE_READ_URL=$DATABASE_READ_URL \
+          -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
+          -e REDIS_URL=$REDIS_URL \
+          -e IS_STAGING_ENV=true \
+          -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
+          -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
+          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
+          npx medusa user -e "admin@email.com" -p "password" || true
       - echo seeding database...
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY -e NODE_ENV=$NODE_ENV $IMAGE_URI npm run seed
+      - docker run --rm \
+          -e DATABASE_READ_URL=$DATABASE_READ_URL \
+          -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
+          -e REDIS_URL=$REDIS_URL \
+          -e IS_STAGING_ENV=true \
+          -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
+          -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
+          -e NODE_ENV=$NODE_ENV $IMAGE_URI \
+          npm run seed
 
   post_build:
     commands:
-      - echo migration and seeding completed successfully...
+      - echo migration and seeding completed successfully in staging environment...
 
