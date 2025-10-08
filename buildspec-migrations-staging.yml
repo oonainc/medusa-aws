@@ -15,8 +15,7 @@ phases:
     runtime-versions:
       python: 3.x # to be able to use AWS CLI
     commands:
-      - echo installing AWS CLI...
-      - pip3 install awscli --upgrade
+      - echo AWS CLI version...
       - aws --version
 
   pre_build:
@@ -29,7 +28,7 @@ phases:
       # imageDetail.json is the output artifact from the previous CodeBuild stage that built our ECR image
       - IMAGE_URI=$(jq -r '.imageUri' imageDetail.json)
       - echo extracted image URI $IMAGE_URI from imageDetail.json
-      
+
       - echo logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
 
@@ -69,7 +68,7 @@ phases:
           -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
           -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
           -e NODE_ENV=$NODE_ENV \
-          $IMAGE_URI npx medusa exec ./src/scripts/seed.js
+          $IMAGE_URI npx medusa exec ./src/scripts/seed.js || true
 
   post_build:
     commands:

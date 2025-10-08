@@ -5,43 +5,39 @@ env:
     DATABASE_READ_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_READ_URL::"
     DATABASE_WRITE_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:DATABASE_STAGING_WRITE_URL::"
     REDIS_URL: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:REDIS_URL::"
+    S3_USER_SECRET_ACCESS_KEY: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:S3_USER_SECRET_ACCESS_KEY::"
+    S3_USER_ACCESS_KEY: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:S3_USER_ACCESS_KEY::"
+  variables:
+    NODE_ENV: "development" # because production skips devDependencies in npm install
 
 phases:
   install:
     runtime-versions:
       nodejs: 22 # for frontend tests
-      python: 3.x # to be able to use AWS CLI
+      python: 3.x
     commands:
-      # - updating system and installing dependencies...
-      # - sudo dnf update -y
-
-      - installing dependencies for frontend tests...
-      - npm install -g @angular/cli
-      - npm ci
-      - npm i @rollup/rollup-linux-arm64-gnu --save-optional
-      - sudo yum install -y firefox
-      - npm i -D karma-firefox-launcher
-
-      - echo installing AWS CLI...
-      - pip3 install awscli --upgrade
+      - echo AWS CLI version...
       - aws --version
+      
+      # we're using two CodePipeline sources: FrontendRepo and BuildArtifact (which is primary)
+      - echo installing dependencies for frontend compatibility tests...
+      - cd $CODEBUILD_SRC_DIR_FrontendRepo
+      - npm install
+      - npm install -g @angular/cli
+      - npm i @rollup/rollup-linux-arm64-gnu --save-optional
+      - npm i -D karma-firefox-launcher
+      - sudo yum install -y firefox > /dev/null
 
   pre_build:
     commands:
       - echo setting AWS zone to us-east-1...
       - aws configure set default.region us-east-1
 
-      # for frontend tests:
-      # compile environments/env.prod.ts and buildspec-edit.ts so we can use them
-      - npx tsc buildspec-edit.ts environments/env.prod.ts
-      # run buildspec-edit.ts and save its output to a file called env.others (more env variables)
-      - node buildspec-edit.js >> env.others
-      # load the env variables to our buildspec
-      - export $(cat env.others | xargs)
-
       # imageDetail.json is the output artifact from the previous CodeBuild stage that built our ECR image
+      - cd $CODEBUILD_SRC_DIR # switch back
       - IMAGE_URI=$(jq -r '.imageUri' imageDetail.json)
       - echo extracted image URI $IMAGE_URI from imageDetail.json
+
       - echo logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 236426078444.dkr.ecr.us-east-1.amazonaws.com
 
@@ -51,10 +47,30 @@ phases:
       - docker pull $IMAGE_URI
 
       - echo running backend tests...
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npm run test:unit
-      - docker run --rm -e DATABASE_READ_URL=$DATABASE_READ_URL -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL -e REDIS_URL=$REDIS_URL $IMAGE_URI npm run test:integration:modules
+      - |
+        docker run --rm \
+          -e DATABASE_READ_URL=$DATABASE_READ_URL \
+          -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
+          -e REDIS_URL=$REDIS_URL \
+          -e IS_STAGING_ENV=true \
+          -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
+          -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
+          -e NODE_ENV=production \
+          $IMAGE_URI npm run test:unit
+      - |
+        docker run --rm \
+          -e DATABASE_READ_URL=$DATABASE_READ_URL \
+          -e DATABASE_WRITE_URL=$DATABASE_WRITE_URL \
+          -e REDIS_URL=$REDIS_URL \
+          -e IS_STAGING_ENV=true \
+          -e S3_USER_SECRET_ACCESS_KEY=$S3_USER_SECRET_ACCESS_KEY \
+          -e S3_USER_ACCESS_KEY=$S3_USER_ACCESS_KEY \
+          -e NODE_ENV=production \
+          $IMAGE_URI npm run test:integration:modules
 
-      - echo running frontend tests...
+      # for frontend tests:
+      - echo testing compatibility with current released frontend ...
+      - cd $CODEBUILD_SRC_DIR_FrontendRepo
       - npx ng test --browsers=FirefoxHeadless --no-watch
 
   post_build:

@@ -8,8 +8,7 @@ phases:
     runtime-versions:
       python: 3.x # to be able to use AWS CLI
     commands:
-      - echo installing AWS CLI...
-      - pip3 install awscli --upgrade
+      - echo AWS CLI version...
       - aws --version
 
   pre_build:
