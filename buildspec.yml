@@ -1,7 +1,10 @@
 version: 0.2
-# this buildspec is used by aws CodeBuild and publishes this app to ECR
-# we already set privileged: true in our linux environment configuration in CDK
-# so this makes Docker available for use here
+
+env:
+  secrets-manager:
+    SERVER_CRT: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_CRT::"
+    SERVER_KEY: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_KEY::"
+    API_GATEWAY_CLIENT_CERT: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:API_GATEWAY_CLIENT_CERT::"
 
 phases:
   install:
@@ -15,6 +18,12 @@ phases:
     commands:
       - echo setting AWS zone to us-east-1...
       - aws configure set default.region us-east-1
+
+      # we need these files availabe in secrets manager to setup Private Trust with Self-Signed Certificates
+      # between our backend and API Gateway, since API Gateway terminates TLS for us
+      - printf "%s\n" "$SERVER_CRT" > certs/server.crt
+      - printf "%s\n" "$SERVER_KEY" > certs/server.key
+      - printf "%s\n" "$API_GATEWAY_CLIENT_CERT" > certs/api_gateway.crt
 
       # generate a unique image tag instead of using string 'latest' as tag
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
