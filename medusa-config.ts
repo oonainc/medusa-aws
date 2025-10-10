@@ -20,7 +20,8 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS || "http://localhost:9000,http://localhost:4200",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    },
+      trustProxy: true
+    } as any,
     redisUrl: process.env.REDIS_URL,
     databaseDriverOptions: { // goes straight into kenx
       ...knexSslConnection,
@@ -34,7 +35,8 @@ module.exports = defineConfig({
         idleTimeoutMillis: 30000,
         reapIntervalMillis: 1000
       },
-    }
+    },
+    workerMode: 'shared'
   },
   modules: [{
     resolve: "@medusajs/medusa/cache-redis",
