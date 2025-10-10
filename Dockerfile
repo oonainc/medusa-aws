@@ -19,9 +19,9 @@ WORKDIR /usr/src/app
 
 # Copy package files and install dependencies first for better docker npm caching
 COPY package*.json ./
-RUN npm ci --omit=dev --legacy-peer-deps
+RUN npm i --omit=dev --legacy-peer-deps
 
-# Copy app source
+# Copy remaining app source
 COPY . .
 
 # Build medusa app
@@ -31,9 +31,8 @@ COPY patches ./.medusa/server/patches/
 
 WORKDIR .medusa/server
 
-RUN npm ci --omit=dev --legacy-peer-deps && \
-#   npm run postinstall && \
-    rm -rf ../../node_modules
+RUN npm i --omit=dev --legacy-peer-deps && \
+#   npm run apply-patches
 
 # Expose your development port (adjust as needed)
 EXPOSE 80
