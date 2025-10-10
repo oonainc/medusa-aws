@@ -33,6 +33,7 @@ WORKDIR .medusa/server
 
 RUN npm i --omit=dev --legacy-peer-deps && \
 #   npm run apply-patches
+    true
 
 # Expose your development port (adjust as needed)
 EXPOSE 80
