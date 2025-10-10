@@ -20,6 +20,7 @@ phases:
 
       # we need these files availabe in secrets manager to setup Private Trust with Self-Signed Certificates
       # between our backend and API Gateway, since API Gateway terminates TLS for us
+      # @TODO instead of writing to disk, let the backend fetch them online using aws kms sdk
       - printf "%s\n" "$SERVER_CRT" > certs/server.crt
       - printf "%s\n" "$SERVER_KEY" > certs/server.key
       # API Gateway mTLS truststore
