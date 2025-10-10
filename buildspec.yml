@@ -4,7 +4,6 @@ env:
   secrets-manager:
     SERVER_CRT: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_CRT::"
     SERVER_KEY: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_KEY::"
-    API_GATEWAY_CLIENT_CERT: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:API_GATEWAY_CLIENT_CERT::"
 
 phases:
   install:
@@ -23,7 +22,8 @@ phases:
       # between our backend and API Gateway, since API Gateway terminates TLS for us
       - printf "%s\n" "$SERVER_CRT" > certs/server.crt
       - printf "%s\n" "$SERVER_KEY" > certs/server.key
-      - printf "%s\n" "$API_GATEWAY_CLIENT_CERT" > certs/api_gateway.crt
+      # API Gateway mTLS truststore
+      - aws s3 cp s3://artifacts-keep/apigateway_mTLS/truststore.pem certs/truststore.pem
 
       # generate a unique image tag instead of using string 'latest' as tag
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)

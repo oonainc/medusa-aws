@@ -1,18 +1,30 @@
 diff --git a/node_modules/@medusajs/medusa/dist/commands/start.js b/node_modules/@medusajs/medusa/dist/commands/start.js
-index 488f371..21501d8 100644
+index 488f371..087d31a 100644
 --- a/node_modules/@medusajs/medusa/dist/commands/start.js
 +++ b/node_modules/@medusajs/medusa/dist/commands/start.js
-@@ -7,7 +7,8 @@ exports.traceRequestHandler = void 0;
+@@ -7,7 +7,11 @@ exports.traceRequestHandler = void 0;
  exports.registerInstrumentation = registerInstrumentation;
  const os_1 = __importDefault(require("os"));
  const path_1 = __importDefault(require("path"));
 -const http_1 = __importDefault(require("http"));
 +// const http_1 = __importDefault(require("http"));
-+const http_s = __importDefault(require("https"));
++//
++const fs = __importDefault(require("fs"));
++const https = __importDefault(require("https"));
++//
  const express_1 = __importDefault(require("express"));
  const cluster_1 = __importDefault(require("cluster"));
  const telemetry_1 = require("@medusajs/telemetry");
-@@ -86,7 +87,24 @@ async function start(args) {
+@@ -58,7 +62,7 @@ function displayAdminUrl({ host, port, container, }) {
+     if (disable) {
+         return;
+     }
+-    logger.info(`Admin URL → http://${host || "localhost"}:${port}${adminPath}`);
++    logger.info(`Admin URL → http(s)://${host || "localhost"}:${port}${adminPath}`);
+ }
+ /**
+  * Retrieve the route path from the express stack based on the input url
+@@ -86,7 +90,24 @@ async function start(args) {
          (0, telemetry_1.track)("CLI_START");
          await registerInstrumentation(directory);
          const app = (0, express_1.default)();
@@ -23,22 +35,22 @@ index 488f371..21501d8 100644
 +
 +        const httpsOptions = {
 +            // server identity self-signed for private trust
-+            key: fs.readFileSync('../../../../../certs/server.key'),
-+            cert: fs.readFileSync('../../../../../certs/server.crt'),
++            key: fs.default.readFileSync('../../../../../certs/server.key'),
++            cert: fs.default.readFileSync('../../../../../certs/server.crt'),
 +        
-+            // trust API Gateway’s client certificate
-+            ca: fs.readFileSync('../../../../../certs/api_gateway.crt'),
++            // API Gateway mTLS truststore
++            ca: fs.default.readFileSync('../../../../../certs/truststore.pem'),
 +        
 +            // enforce client cert presentation and validation
 +            requestCert: true,
-+            rejectUnauthorized: true,
++            rejectUnauthorized: true
 +        }
 +
-+        const http_ = http_s.default.createServer(httpsOptions, async (req, res) => {
++        const http_ = https.default.createServer(httpsOptions, async (req, res) => {
              const stack = app._router.stack;
              await new Promise((resolve) => {
                  res.on("finish", resolve);
-@@ -104,6 +122,25 @@ async function start(args) {
+@@ -104,6 +125,25 @@ async function start(args) {
                  }
              });
          });
