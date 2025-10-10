@@ -30,7 +30,7 @@ RUN npx medusa build
 # Copy patches and keys we'll use for API Gateway Private Trust with Self-Signed Certificates
 # Remember to run our app in https port 443 in production
 COPY patches ./.medusa/server/patches/
-# @TODO instead of writing to disk, let the backend fetch them online using aws kms sdk
+# @TODO instead of writing to disk, let the backend fetch them online using aws sdk
 COPY certs ./.medusa/server/certs
 
 WORKDIR .medusa/server
