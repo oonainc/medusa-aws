@@ -1,17 +1,15 @@
 diff --git a/node_modules/@medusajs/medusa/dist/commands/start.js b/node_modules/@medusajs/medusa/dist/commands/start.js
-index 488f371..205006f 100644
+index 488f371..dbebd86 100644
 --- a/node_modules/@medusajs/medusa/dist/commands/start.js
 +++ b/node_modules/@medusajs/medusa/dist/commands/start.js
-@@ -7,7 +7,12 @@ exports.traceRequestHandler = void 0;
- exports.registerInstrumentation = registerInstrumentation;
+@@ -8,6 +8,11 @@ exports.registerInstrumentation = registerInstrumentation;
  const os_1 = __importDefault(require("os"));
  const path_1 = __importDefault(require("path"));
--const http_1 = __importDefault(require("http"));
-+// const http_1 = __importDefault(require("http"));
+ const http_1 = __importDefault(require("http"));
 +//
-+const fs = __importDefault(require("fs"));
-+const path = __importDefault(require("path"));
-+const https = __importDefault(require("https"));
++// const fs = __importDefault(require("fs"));
++// const path = __importDefault(require("path"));
++// const https = __importDefault(require("https"));
 +//
  const express_1 = __importDefault(require("express"));
  const cluster_1 = __importDefault(require("cluster"));
@@ -25,38 +23,28 @@ index 488f371..205006f 100644
  }
  /**
   * Retrieve the route path from the express stack based on the input url
-@@ -86,7 +91,24 @@ async function start(args) {
+@@ -86,6 +91,42 @@ async function start(args) {
          (0, telemetry_1.track)("CLI_START");
          await registerInstrumentation(directory);
          const app = (0, express_1.default)();
--        const http_ = http_1.default.createServer(async (req, res) => {
 +
-+        const certificatesDir = path.default.resolve(process.cwd(), 'certs');
-+        const httpsOptions = {
-+            // server identity self-signed for private trust
-+            // $ openssl genrsa -out server.key 2048
-+            // $ openssl req -new -x509 -utf8 -key server.key -out server.crt -days 3650 -sha256
-+            key: fs.default.readFileSync(path.default.join(certificatesDir, 'server.key')),
-+            cert: fs.default.readFileSync(path.default.join(certificatesDir, 'server.crt')),
++        // const certificatesDir = path.default.resolve(process.cwd(), 'certs');
++        // const httpsOptions = {
++        //     // server identity self-signed for private trust
++        //     // $ openssl genrsa -out server.key 2048
++        //     // $ openssl req -new -x509 -utf8 -key server.key -out server.crt -days 3650 -sha256
++        //     key: fs.default.readFileSync(path.default.join(certificatesDir, 'server.key')),
++        //     cert: fs.default.readFileSync(path.default.join(certificatesDir, 'server.crt')),
 +        
-+            // aws private certificate authority certificate
-+            ca: fs.default.readFileSync(path.default.join(certificatesDir, 'Certificate.pem')),
++        //     // aws private certificate authority certificate
++        //     ca: fs.default.readFileSync(path.default.join(certificatesDir, 'Certificate.pem')),
 +        
-+            // enforce client cert presentation and validation
-+            requestCert: true,
-+            rejectUnauthorized: true
-+        }
++        //     // enforce client cert presentation and validation
++        //     requestCert: true,
++        //     rejectUnauthorized: true
++        // }
 +
-+        const http_ = https.default.createServer(httpsOptions, async (req, res) => {
-             const stack = app._router.stack;
-             await new Promise((resolve) => {
-                 res.on("finish", resolve);
-@@ -104,6 +126,25 @@ async function start(args) {
-                 }
-             });
-         });
-+
-+        // const http_ = http_1.default.createServer(async (req, res) => {
++        // const http_ = https.default.createServer(httpsOptions, async (req, res) => {
 +        //     const stack = app._router.stack;
 +        //     await new Promise((resolve) => {
 +        //         res.on("finish", resolve);
@@ -74,6 +62,7 @@ index 488f371..205006f 100644
 +        //         }
 +        //     });
 +        // });
-         try {
-             const { shutdown, gqlSchema, container, modules } = await (0, loaders_1.default)({
-                 directory,
++
+         const http_ = http_1.default.createServer(async (req, res) => {
+             const stack = app._router.stack;
+             await new Promise((resolve) => {
