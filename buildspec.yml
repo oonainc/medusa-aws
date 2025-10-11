@@ -1,10 +1,5 @@
 version: 0.2
 
-env:
-  secrets-manager:
-    SERVER_CRT: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_CRT::"
-    SERVER_KEY: "arn:aws:secretsmanager:us-east-1:236426078444:secret:ecomm-secrets-X5kIyP:SERVER_KEY::"
-
 phases:
   install:
     runtime-versions:
@@ -21,10 +16,10 @@ phases:
       # we need these files availabe to setup Private Trust with Self-Signed Certificates
       # between our backend and API Gateway, since API Gateway terminates TLS for us
       # @TODO instead of writing to disk, let the backend fetch them online using aws sdk
-      - aws s3 cp s3://artifacts-keep/apigateway_mTLS/server.crt certs/server.crt
-      - aws s3 cp s3://artifacts-keep/apigateway_mTLS/server.key certs/server.key
+      - aws s3 cp s3://artifacts-keep/backend_openssl_certs/server.crt certs/server.crt
+      - aws s3 cp s3://artifacts-keep/backend_openssl_certs/server.key certs/server.key
       # API Gateway mTLS truststore
-      - aws s3 cp s3://artifacts-keep/apigateway_mTLS/truststore.pem certs/truststore.pem
+      - aws s3 cp s3://artifacts-keep/private_certificate_authority/Certificate.pem certs/Certificate.pem
 
       # generate a unique image tag instead of using string 'latest' as tag
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
