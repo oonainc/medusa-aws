@@ -36,6 +36,7 @@ module.exports = defineConfig({
         reapIntervalMillis: 1000
       },
     },
+    cookieOptions: { secure: false, sameSite: "lax" },
     workerMode: 'shared'
   },
   modules: [{
